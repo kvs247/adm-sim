@@ -8,9 +8,8 @@ int main()
 {
   std::cout << "admsim\n";
 
-  const auto data = readVector<VelocimetersItem>(VECTOR_DATA_PATH);
-  std::cout << "datal: " << data.size() << "\n";
-  for (auto &item : data)
+  const auto vectorData = readVector<VectorDataItem>(VECTOR_DATA_PATH);
+  for (auto &item : vectorData)
   {
     std::cout << "{\n";
     for (auto j = 0; j < N_VELOCIMETERS; ++j)
@@ -20,4 +19,11 @@ int main()
     std::cout << "},\n";
   }
   std::cout << "\n";
+
+  std::cout << "\n\n";
+  const auto velocimetersData = readVector<XYVector>(VELOCIMETER_LOCATIONS_PATH);
+  for (auto &item : velocimetersData)
+  {
+    std::cout << "{" << item.x << ", " << item.y << "}\n";
+  }
 }

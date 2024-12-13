@@ -10,4 +10,4 @@ struct XYVector
   float y;
 };
 
-using VelocimetersItem = std::array<XYVector, N_VELOCIMETERS>;
+using VectorDataItem = std::array<XYVector, N_VELOCIMETERS>;
