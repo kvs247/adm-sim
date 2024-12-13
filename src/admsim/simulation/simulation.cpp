@@ -1,5 +1,7 @@
 #include <vector>
 
+#include "../types.hpp"
+#include "common/types.hpp"
 #include "simulation.hpp"
 
 std::vector<ParcelLife> Simulation::runSimulation() const

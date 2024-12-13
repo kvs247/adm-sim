@@ -3,7 +3,8 @@
 #include "common/config.hpp"
 #include "common/io.hpp"
 #include "common/types.hpp"
-#include "simulation.hpp"
+#include "simulation/simulation.hpp"
+#include "types.hpp"
 
 int main()
 {
@@ -27,7 +28,7 @@ int main()
   //   std::cout << "{" << item.x << ", " << item.y << "}\n";
   // }
 
-std::cout << "vectodata: " << vectorData.size() << "\n";
+  std::cout << "vectodata: " << vectorData.size() << "\n";
 
   Simulation simulation(vectorData, velocimetersData);
   const auto simulationData = simulation.runSimulation();

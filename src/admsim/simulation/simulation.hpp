@@ -5,8 +5,8 @@
 #include <vector>
 
 #include "common/types.hpp"
-#include "config.hpp"
-#include "types.hpp"
+#include "../config.hpp"
+#include "../types.hpp"
 
 class Simulation
 {
