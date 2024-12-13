@@ -29,7 +29,8 @@ int main()
 
 std::cout << "vectodata: " << vectorData.size() << "\n";
 
-  const auto simulationData = simulation(vectorData, velocimetersData);
+  Simulation simulation(vectorData, velocimetersData);
+  const auto simulationData = simulation.runSimulation();
 
   for (const ParcelLife &x : simulationData)
   {
