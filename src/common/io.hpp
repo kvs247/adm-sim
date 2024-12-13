@@ -1,11 +1,11 @@
 #pragma once
 
-#include <vector>
-#include <string>
+#include <fstream>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
-template <typename T>
-void write_vector(std::vector<T> &v, const std::string &fpath)
+template <typename T> void writeVector(std::vector<T> &v, const std::string &fpath)
 {
   std::ofstream f(fpath, std::ios::binary | std::ios::out);
   if (!f)
@@ -17,10 +17,14 @@ void write_vector(std::vector<T> &v, const std::string &fpath)
   f.close();
 }
 
-template <typename T>
-std::vector<T> read_vector(const std::string &fpath)
+template <typename T> std::vector<T> readVector(const std::string &fpath)
 {
   std::ifstream f(fpath, std::ios::binary | std::ios::ate);
+  if (!f)
+  {
+    throw std::runtime_error("Failed to open input file: " + fpath);
+  }
+
   std::streamsize fsize = f.tellg();
   if (fsize % sizeof(T) != 0)
   {
@@ -30,7 +34,7 @@ std::vector<T> read_vector(const std::string &fpath)
   size_t n = fsize / sizeof(T);
   std::vector<T> v(n);
   f.seekg(0, std::ios::beg);
-  if (!f.read(reinterpret_cast<char*>(v.data()), fsize))
+  if (!f.read(reinterpret_cast<char *>(v.data()), fsize))
   {
     throw std::runtime_error("Error reading input file: " + fpath);
   }
