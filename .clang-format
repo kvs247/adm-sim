@@ -1,0 +1,49 @@
+---
+# Base style
+BasedOnStyle: LLVM
+
+# Column and line breaking
+ColumnLimit: 120
+
+# Function declaration formatting
+BinPackArguments: false
+BinPackParameters: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AlignAfterOpenBracket: AlwaysBreak
+IndentWidth: 2
+
+# Brace wrapping configuration
+BreakBeforeBraces: Allman
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: true
+  BeforeElse: true
+  IndentBraces: false
+  AfterCaseLabel: true
+  SplitEmptyFunction: false  # Added to allow empty functions on one line
+  SplitEmptyRecord: false    # Added to allow empty classes/structs on one line
+
+# Additional formatting options
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AllowShortBlocksOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: All  # Changed to allow short functions on single line
+AllowShortLambdasOnASingleLine: All
+AlwaysBreakAfterReturnType: None
+BreakBeforeBinaryOperators: None
+BreakConstructorInitializers: BeforeColon
+
+# Penalties
+PenaltyBreakAssignment: 100
+PenaltyBreakBeforeFirstCallParameter: 0
+PenaltyBreakComment: 100
+PenaltyBreakFirstLessLess: 100
+PenaltyBreakString: 100
+PenaltyExcessCharacter: 100
+PenaltyReturnTypeOnItsOwnLine: 100
