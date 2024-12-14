@@ -11,3 +11,5 @@ struct XYVector
 };
 
 using VectorDataItem = std::array<XYVector, N_VELOCIMETERS>;
+
+using VelocimeterLocations = std::vector<XYVector>;

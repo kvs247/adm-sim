@@ -4,9 +4,9 @@
 #include <iostream>
 #include <vector>
 
-#include "common/types.hpp"
 #include "../config.hpp"
 #include "../types.hpp"
+#include "common/types.hpp"
 
 class Simulation
 {
@@ -25,4 +25,20 @@ private:
 
   XYVector calculateVector(const float x, const float y, const VectorDataItem &vectorData) const;
   std::vector<float> calculateWeights(const float x, const float y) const;
+
+  friend struct SimulationTester;
+};
+
+struct SimulationTester
+{
+public:
+  SimulationTester(Simulation &s) : simulation(s) {}
+
+  std::vector<float> testCalculateWeights(const float x, const float y) const
+  {
+    return simulation.calculateWeights(x, y);
+  };
+
+private:
+  Simulation &simulation;
 };
