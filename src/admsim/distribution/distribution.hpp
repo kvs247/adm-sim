@@ -1,5 +1,6 @@
 #pragma once
 
+#include <math.h>
 #include <vector>
 
 #include "../types.hpp"
@@ -14,4 +15,8 @@ public:
 
 private:
   const std::vector<ParcelLife> &simulationData;
+
+  float calculateDensityAtXYT(const float x, const float y, const float t) const;
+
+  std::vector<float> makeLocations() const;
 };

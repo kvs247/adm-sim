@@ -44,5 +44,7 @@ int main()
   }
 
   Distribution distribution(simulationData);
-  const auto distributionData = distribution.calculateDistributions();
+  auto distributionData = distribution.calculateDistributions();
+
+  writeVector(distributionData, "distributionData");
 }
