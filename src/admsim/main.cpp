@@ -3,6 +3,7 @@
 #include "common/config.hpp"
 #include "common/io.hpp"
 #include "common/types.hpp"
+#include "distribution/distribution.hpp"
 #include "simulation/simulation.hpp"
 #include "types.hpp"
 
@@ -41,4 +42,7 @@ int main()
       std::cout << "{" << y.t << ", " << y.x << ", " << y.y << ", " << y.sx << ", " << y.sy << "}\n";
     }
   }
+
+  Distribution distribution(simulationData);
+  const auto distributionData = distribution.calculateDistributions();
 }
