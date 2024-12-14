@@ -73,7 +73,7 @@ float Distribution::calculateDensityAtXYT(const float x, const float y, const fl
     const float sx2 = parcelAtT.sx * parcelAtT.sx;
     const float sy2 = parcelAtT.sy * parcelAtT.sy;
 
-    const float expression = 1 / (2 * M_PI * parcelAtT.sx * parcelAtT.sy);
+    const float expression = TIMESTEP / (2 * M_PI * parcelAtT.sx * parcelAtT.sy);
     const float exponent = -(dx * dx / (2 * sx2) + dy * dy / (2 * sy2));
 
     density += expression * std::exp(exponent);

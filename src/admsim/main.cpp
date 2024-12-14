@@ -34,17 +34,19 @@ int main()
   Simulation simulation(vectorData, velocimetersData);
   const auto simulationData = simulation.runSimulation();
 
-  for (const ParcelLife &x : simulationData)
-  {
-    std::cout << "new Parcel\n";
-    for (const Parcel &y : x)
-    {
-      std::cout << "{" << y.t << ", " << y.x << ", " << y.y << ", " << y.sx << ", " << y.sy << "}\n";
-    }
-  }
+  // for (const ParcelLife &x : simulationData)
+  // {
+  //   std::cout << "new Parcel\n";
+  //   for (const Parcel &y : x)
+  //   {
+  //     std::cout << "{" << y.t << ", " << y.x << ", " << y.y << ", " << y.sx << ", " << y.sy << "}\n";
+  //   }
+  // }
 
   Distribution distribution(simulationData);
   auto distributionData = distribution.calculateDistributions();
+
+  std::cout << "distributionDataSize: " << distributionData.size() << "\n";
 
   writeVector(distributionData, "distributionData");
 }

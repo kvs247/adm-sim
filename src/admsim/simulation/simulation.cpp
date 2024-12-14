@@ -17,8 +17,8 @@ std::vector<ParcelLife> Simulation::runSimulation() const
       const auto currentVector = calculateVector(lastParcel.x, lastParcel.y, vectors);
 
       const auto newT = lastParcel.t + 1;
-      const auto newX = lastParcel.x + currentVector.x;
-      const auto newY = lastParcel.y + currentVector.y;
+      const auto newX = lastParcel.x + currentVector.x * TIMESTEP;
+      const auto newY = lastParcel.y + currentVector.y * TIMESTEP;
       const auto newSx = lastParcel.sx * DISPERSION_GROWTH_COEFFICIENT;
       const auto newSy = lastParcel.sy * DISPERSION_GROWTH_COEFFICIENT;
 
