@@ -25,14 +25,16 @@ def jet() -> List[Tuple[int, int, int]]:
     return colormap
 
 
-def generate_gif(data: npt.NDArray[np.float32], duration=200) -> io.BytesIO:
+def generate_gif(data: npt.NDArray[np.float32], duration=75) -> io.BytesIO:
     animation_max = np.max(data)
     print("max: ", animation_max)
 
     # Create a modified jet colormap that starts with solid blue
     colormap = np.array(jet(), dtype=np.uint8)
     # Make the first ~25 entries solid blue for the bottom 10%
-    colormap[:26] = colormap[0]  # Set to the darkest blue
+    percent_blue = 5
+    blue_entries = int(256 * (percent_blue / 100))
+    colormap[:blue_entries] = colormap[0]  # Set to the darkest blue
 
     buffer = io.BytesIO()
     images = []
@@ -85,7 +87,7 @@ def resize_image(image: Image.Image) -> Image.Image:
 
 if __name__ == "__main__":
     data = np.fromfile("distributionData",
-                       dtype=np.float32).reshape(-1, 100, 100)
+                       dtype=np.float32).reshape(-1, 200, 200)
     print(data.shape)
     gif_buffer = generate_gif(data)
     with open("out.gif", "wb") as f:
