@@ -1,8 +1,9 @@
 from PIL import Image
+from typing import Tuple, List
 import io
 import numpy as np
 import numpy.typing as npt
-from typing import Tuple, List
+import sys
 
 
 def jet() -> List[Tuple[int, int, int]]:
@@ -85,10 +86,20 @@ def resize_image(image: Image.Image) -> Image.Image:
     return image.resize((512, 512), Image.Resampling.LANCZOS)
 
 
-if __name__ == "__main__":
-    data = np.fromfile("distributionData",
-                       dtype=np.float32).reshape(-1, 200, 200)
+def main():
+    if len(sys.argv) != 2:
+        print("Error: no imput to python make_animation.py")
+        sys.exit(1)
+
+    input_data_path = sys.argv[1]
+
+    data = np.fromfile(input_data_path, dtype=np.float32).reshape(-1, 200, 200)
     print(data.shape)
     gif_buffer = generate_gif(data)
-    with open("out.gif", "wb") as f:
+    with open("out/out.gif", "wb") as f:
         f.write(gif_buffer.getvalue())
+
+
+if __name__ == "__main__":
+    print("python....")
+    main()

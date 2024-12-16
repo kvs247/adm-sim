@@ -48,5 +48,5 @@ int main()
 
   std::cout << "distributionDataSize: " << distributionData.size() << "\n";
 
-  writeVector(distributionData, "distributionData");
+  writeVector(distributionData, "data/distributionData");
 }
