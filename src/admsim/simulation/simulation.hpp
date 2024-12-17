@@ -4,8 +4,8 @@
 #include <iostream>
 #include <vector>
 
-#include "../config.hpp"
 #include "../types.hpp"
+#include "common/config.hpp"
 #include "common/types.hpp"
 
 class Simulation

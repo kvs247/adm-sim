@@ -1,41 +1,40 @@
 from PIL import Image
 from typing import Tuple, List
 import io
+import json
+import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
 import sys
 
 
-def jet() -> List[Tuple[int, int, int]]:
-    """Generate a jet colormap (blue -> cyan -> yellow -> red)"""
-    n = 256
-    colormap = []
-    for i in range(n):
-        # Normalize i to [0,1]
-        x = i / (n-1)
-        r = np.clip(np.minimum(4*x - 1.5, -4*x + 4.5), 0, 1)
-        g = np.clip(np.minimum(4*x - 0.5, -4*x + 3.5), 0, 1)
-        b = np.clip(np.minimum(4*x + 0.5, -4*x + 2.5), 0, 1)
+def get_config(config_file_path: str) -> dict:
+    with open(config_file_path) as f:
+        return json.load(f)
 
-        # Convert to 0-255 range
+
+def get_colormap(name: str, n_colors: int = 256) -> List[Tuple[int, int, int]]:
+    cmap = plt.get_cmap(name)
+    colors = cmap(np.linspace(0, 1, n_colors))
+
+    colormap = []
+    for color in colors:
         colormap.append((
-            int(255 * r),
-            int(255 * g),
-            int(255 * b)
+            int(255 * color[0]),
+            int(255 * color[1]),
+            int(255 * color[2])
         ))
     return colormap
 
 
 def generate_gif(data: npt.NDArray[np.float32], duration=75) -> io.BytesIO:
     animation_max = np.max(data)
-    print("max: ", animation_max)
 
-    # Create a modified jet colormap that starts with solid blue
-    colormap = np.array(jet(), dtype=np.uint8)
-    # Make the first ~25 entries solid blue for the bottom 10%
+    colormap = np.array(get_colormap('magma'), dtype=np.uint8)
+
     percent_blue = 5
     blue_entries = int(256 * (percent_blue / 100))
-    colormap[:blue_entries] = colormap[0]  # Set to the darkest blue
+    colormap[:blue_entries] = colormap[0]
 
     buffer = io.BytesIO()
     images = []
@@ -63,20 +62,13 @@ def create_image(
     colormap: npt.NDArray[np.uint8],
     max_value: float,
 ) -> Image.Image:
-    # Normalize the frame to [0, 1]
     normalized_frame = np.clip(frame / max_value, 0, 1)
-
-    # Create the color indices
     indices = np.clip((normalized_frame * 255), 0, 255).astype(int)
-
-    # Apply the colormap
     colored_frame = colormap[indices]
 
-    # Create fully opaque image
     opacity = np.full(frame.shape, 255, dtype=np.uint8)
     rgba_frame = np.dstack((colored_frame, opacity))
 
-    # flip image vertically
     rgba_frame = np.flipud(rgba_frame)
 
     return Image.fromarray(rgba_frame, mode="RGBA")
@@ -91,10 +83,12 @@ def main():
         print("Error: no imput to python make_animation.py")
         sys.exit(1)
 
+    config = get_config("../config.json")
+
     input_data_path = sys.argv[1]
 
-    data = np.fromfile(input_data_path, dtype=np.float32).reshape(-1, 200, 200)
-    print(data.shape)
+    dim = config["ANIMATION_DIMENSION"]
+    data = np.fromfile(input_data_path, dtype=np.float32).reshape(-1, dim, dim)
     gif_buffer = generate_gif(data)
     with open("out/out.gif", "wb") as f:
         f.write(gif_buffer.getvalue())

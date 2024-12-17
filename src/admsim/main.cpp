@@ -11,7 +11,9 @@ int main()
 {
   std::cout << "admsim\n";
 
-  const auto vectorData = readVector<VectorDataItem>(VECTOR_DATA_PATH);
+  const auto &config = Config::getInstance().getConfig();
+
+  const auto vectorData = readVector<VectorDataItem>(config.vectorDataPath);
   // for (auto &item : vectorData)
   // {
   //   std::cout << "{\n";
@@ -23,13 +25,11 @@ int main()
   // }
   // std::cout << "\n";
 
-  const auto velocimetersData = readVector<XYVector>(VELOCIMETER_LOCATIONS_PATH);
+  const auto velocimetersData = readVector<XYVector>(config.velocimeterLocationsPath);
   // for (auto &item : velocimetersData)
   // {
   //   std::cout << "{" << item.x << ", " << item.y << "}\n";
   // }
-
-  std::cout << "vectodata: " << vectorData.size() << "\n";
 
   Simulation simulation(vectorData, velocimetersData);
   const auto simulationData = simulation.runSimulation();

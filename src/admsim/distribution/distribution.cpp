@@ -8,7 +8,9 @@
 
 std::vector<float> Distribution::calculateDistributions() const
 {
-  std::vector<float> res(ANIMATION_DIMENSION * ANIMATION_DIMENSION * N_READINGS);
+  const auto &config = Config::getInstance().getConfig();
+
+  std::vector<float> res(config.animationDimension * config.animationDimension * config.nReadings);
 
   std::atomic<size_t> nextIndex(0);
 
@@ -19,20 +21,21 @@ std::vector<float> Distribution::calculateDistributions() const
     while (true)
     {
       size_t t = nextIndex.fetch_add(1);
-      if (t >= N_READINGS)
+      if (t >= config.nReadings)
       {
         break;
       }
 
-      for (size_t i = 0; i < ANIMATION_DIMENSION; ++i)
+      for (size_t i = 0; i < config.animationDimension; ++i)
       {
-        for (size_t j = 0; j < ANIMATION_DIMENSION; ++j)
+        for (size_t j = 0; j < config.animationDimension; ++j)
         {
           const auto x = locations[i];
           const auto y = locations[j];
           const auto pointDensity = calculateDensityAtXYT(x, y, t);
 
-          size_t updateIndex = t * ANIMATION_DIMENSION * ANIMATION_DIMENSION + i * ANIMATION_DIMENSION + j;
+          size_t updateIndex = t * config.animationDimension * config.animationDimension +
+                               i * config.animationDimension + j;
           res[updateIndex] = pointDensity;
         }
       }
@@ -57,6 +60,8 @@ std::vector<float> Distribution::calculateDistributions() const
 
 float Distribution::calculateDensityAtXYT(const float x, const float y, const float t) const
 {
+  const auto &config = Config::getInstance().getConfig();
+
   float density = 0;
   for (const auto &parcelLife : simulationData)
   {
@@ -73,7 +78,7 @@ float Distribution::calculateDensityAtXYT(const float x, const float y, const fl
     const float sx2 = parcelAtT.sx * parcelAtT.sx;
     const float sy2 = parcelAtT.sy * parcelAtT.sy;
 
-    const float expression = TIMESTEP / (2 * M_PI * parcelAtT.sx * parcelAtT.sy);
+    const float expression = config.timestep / (2 * M_PI * parcelAtT.sx * parcelAtT.sy);
     const float exponent = -(dx * dx / (2 * sx2) + dy * dy / (2 * sy2));
 
     density += expression * std::exp(exponent);
@@ -84,9 +89,11 @@ float Distribution::calculateDensityAtXYT(const float x, const float y, const fl
 
 std::vector<float> Distribution::makeLocations() const
 {
+  const auto &config = Config::getInstance().getConfig();
+
   std::vector<float> locations;
-  const float border = ANIMATION_WIDTH / 2;
-  const float step = ANIMATION_WIDTH / ANIMATION_DIMENSION;
+  const float border = config.animationWidth / 2;
+  const float step = config.animationWidth / config.animationDimension;
   for (float i = -border; i < border; i += step)
   {
     locations.push_back(i);

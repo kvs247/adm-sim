@@ -6,6 +6,7 @@ add_executable(admsim
   distribution/distribution.cpp
 )
 target_link_libraries(admsim PRIVATE common)
+target_link_libraries(admsim PRIVATE nlohmann_json::nlohmann_json)
 
 add_executable(simulation_test 
   simulation/test.cpp 

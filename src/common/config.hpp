@@ -1,12 +1,33 @@
 #pragma once
 
+#include <nlohmann/json.hpp>
 #include <string>
 
-const int N_VELOCIMETERS = 3;
-const int N_READINGS = 500;
-const int ANIMATION_DIMENSION = 200;
-const float ANIMATION_WIDTH = 20;
-const float TIMESTEP = 0.1;
+class Config
+{
+public:
+  struct Settings
+  {
+    size_t nVelocimeters;
+    int nReadings;
+    int animationDimension;
+    float animationWidth;
+    float timestep;
+    float parcelXOrigin;
+    float parcelYOrigin;
+    float initialParcelDispersion;
+    float dispersionGrowthCoefficient;
+    std::string vectorDataPath;
+    std::string velocimeterLocationsPath;
+  };
 
-const std::string VELOCIMETER_LOCATIONS_PATH = "data/velocimeterLocations";
-const std::string VECTOR_DATA_PATH = "data/vectorData";
+  static Config &getInstance();
+  const Settings &getConfig() const { return settings; }
+
+private:
+  Config(const std::string &filepath);
+  Settings settings;
+
+  Config(const Config &) = delete;
+  Config &operator=(const Config &) = delete;
+};

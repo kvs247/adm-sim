@@ -2,14 +2,17 @@
 
 #include <vector>
 
-#include "config.hpp"
+#include "common/config.hpp"
 
-struct Parcel {
-  float t = 0;
-  float x = PARCEL_ORIGIN.x;
-  float y = PARCEL_ORIGIN.y;
-  float sx = INITIAL_PARCEL_DISPERSION;
-  float sy = INITIAL_PARCEL_DISPERSION;
+struct Parcel
+{
+  float t;
+  float x;
+  float y;
+  float sx;
+  float sy;
+
+  Parcel() = delete;
 };
 
 using ParcelLife = std::vector<Parcel>;

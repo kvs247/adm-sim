@@ -1,15 +1,12 @@
 #pragma once
 
-#include <array>
-
-#include "config.hpp"
-
 struct XYVector
 {
   float x;
   float y;
 };
 
-using VectorDataItem = std::array<XYVector, N_VELOCIMETERS>;
+static constexpr size_t MAX_VELOCIMETERS = 16;
+using VectorDataItem = std::array<XYVector, MAX_VELOCIMETERS>;
 
 using VelocimeterLocations = std::vector<XYVector>;

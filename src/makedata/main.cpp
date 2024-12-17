@@ -19,6 +19,8 @@ std::mt19937 randomGenerator(std::random_device{}());
 
 std::vector<VectorDataItem> makeVectorData()
 {
+  const auto &config = Config::getInstance().getConfig();
+
   // could also do uniform_real_distribution
   std::normal_distribution<float> rNoise(0.0f, targetSpeed * speedSpreadPercent);
   std::normal_distribution<float> tNoise(0.0f, degToRad(directionSpreadDeg));
@@ -27,14 +29,14 @@ std::vector<VectorDataItem> makeVectorData()
 
   float dir = targetDirectionDeg;
 
-  std::vector<VectorDataItem> res(N_READINGS);
-  for (int i = 0; i < N_READINGS; ++i)
+  std::vector<VectorDataItem> res(config.nReadings);
+  for (int i = 0; i < config.nReadings; ++i)
   {
 
     dir += xNoise(randomGenerator);
 
     VectorDataItem resItem;
-    for (int j = 0; j < N_VELOCIMETERS; ++j)
+    for (int j = 0; j < config.nVelocimeters; ++j)
     {
       const float r = targetSpeed + rNoise(randomGenerator);
       const float t = degToRad(dir) + tNoise(randomGenerator);
@@ -48,14 +50,16 @@ std::vector<VectorDataItem> makeVectorData()
 
 std::vector<XYVector> makeVelocimeterLocations()
 {
+  const auto &config = Config::getInstance().getConfig();
+
   const float targetR = 1;
   std::normal_distribution<float> rNoise(0.0f, targetR * 0.15f);
 
-  std::vector<XYVector> res(N_VELOCIMETERS);
-  for (int i = 0; i < N_VELOCIMETERS; ++i)
+  std::vector<XYVector> res(config.nVelocimeters);
+  for (int i = 0; i < config.nVelocimeters; ++i)
   {
     const float r = 1 + rNoise(randomGenerator);
-    const float t = i * 2 * M_PI / N_VELOCIMETERS;
+    const float t = i * 2 * M_PI / config.nVelocimeters;
     res[i] = polarToCart(r, t);
   }
 
@@ -64,10 +68,12 @@ std::vector<XYVector> makeVelocimeterLocations()
 
 int main()
 {
+  const auto &config = Config::getInstance().getConfig();
+
   std::cout << "makedata\n";
   auto vectorData = makeVectorData();
-  writeVector<VectorDataItem>(vectorData, VECTOR_DATA_PATH);
+  writeVector<VectorDataItem>(vectorData, config.vectorDataPath);
 
   auto velocimeterLocations = makeVelocimeterLocations();
-  writeVector<XYVector>(velocimeterLocations, VELOCIMETER_LOCATIONS_PATH);
+  writeVector<XYVector>(velocimeterLocations, config.velocimeterLocationsPath);
 }
