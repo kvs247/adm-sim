@@ -1,6 +1,8 @@
 #pragma once
 
 #include <fstream>
+#include <ostream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -42,3 +44,46 @@ template <typename T> std::vector<T> readVector(const std::string &fpath)
 
   return v;
 }
+
+std::string makeBytesWrittenString(size_t bytes)
+{
+  static const size_t KILOBYTE = 1024;
+  static const size_t MEGABYTE = KILOBYTE * 1024;
+  static const size_t GIGABYTE = MEGABYTE * 1024;
+  static const size_t TERABYTE = GIGABYTE * 1024;
+
+  const double dBytes = static_cast<double>(bytes);
+
+  std::ostringstream oss;
+  oss << std::fixed << std::setprecision(2);
+
+  if (bytes < KILOBYTE)
+  {
+    oss << bytes << " bytes";
+  }
+  else if (bytes < MEGABYTE)
+  {
+    oss << dBytes / KILOBYTE << " KiB";
+  }
+  else if (bytes < GIGABYTE)
+  {
+    oss << dBytes / MEGABYTE << " MiB";
+  }
+  else if (bytes < TERABYTE)
+  {
+    oss << dBytes / GIGABYTE << " GiB";
+  }
+  else
+  {
+    oss << ">1 TiB";
+  }
+
+  return oss.str();
+}
+
+template <typename T>
+void logDataWritten(const std::vector<T> &v, const std::string &path, std::ostream &os = std::cout)
+{
+  const auto bytesStr = makeBytesWrittenString(v.size() * sizeof(T));
+  os << "wrote " << bytesStr << " to " << path << "\n";
+};

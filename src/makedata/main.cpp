@@ -70,10 +70,12 @@ int main()
 {
   const auto &config = Config::getInstance().getConfig();
 
-  std::cout << "makedata\n";
+  std::cout << "executing makedata...\n";
   auto vectorData = makeVectorData();
   writeVector<VectorDataItem>(vectorData, config.vectorDataPath);
+  logDataWritten<VectorDataItem>(vectorData, config.vectorDataPath);
 
   auto velocimeterLocations = makeVelocimeterLocations();
   writeVector<XYVector>(velocimeterLocations, config.velocimeterLocationsPath);
+  logDataWritten<XYVector>(velocimeterLocations, config.velocimeterLocationsPath);
 }

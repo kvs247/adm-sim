@@ -53,7 +53,6 @@ std::vector<float> Distribution::calculateDistributions() const
   {
     t.join();
   }
-  std::cout << "done\n";
 
   return res;
 };

@@ -9,7 +9,7 @@
 
 int main()
 {
-  std::cout << "admsim\n";
+  std::cout << "executing admsim...\n";
 
   const auto &config = Config::getInstance().getConfig();
 
@@ -46,7 +46,7 @@ int main()
   Distribution distribution(simulationData);
   auto distributionData = distribution.calculateDistributions();
 
-  std::cout << "distributionDataSize: " << distributionData.size() << "\n";
-
-  writeVector(distributionData, "data/distributionData");
+  const std::string path = "data/distributionData";
+  writeVector(distributionData, path);
+  logDataWritten<float>(distributionData, path);
 }
