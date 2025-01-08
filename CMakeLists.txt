@@ -4,18 +4,24 @@ project(AdvectionDiffusionSimulation)
 include(FetchContent)
 
 FetchContent_Declare(
+  kmath
+  GIT_REPOSITORY https://github.com/kvs247/kmath.git
+  GIT_TAG main
+)
+
+FetchContent_Declare(
   json
   GIT_REPOSITORY https://github.com/nlohmann/json.git
   GIT_TAG v3.11.3
 )
-FetchContent_MakeAvailable(json)
 
 FetchContent_Declare(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
   GIT_TAG v1.15.2
 )
-FetchContent_MakeAvailable(googletest)
+
+FetchContent_MakeAvailable(kmath json googletest)
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/data)
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/out)

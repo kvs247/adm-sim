@@ -1,13 +1,13 @@
 #include <fstream>
 #include <iostream>
+#include <kmath/Trig.hpp>
 #include <map>
-#include <math.h>
 #include <random>
+#include <tuple>
 #include <vector>
 
 #include "common/config.hpp"
 #include "common/io.hpp"
-#include "common/math.hpp"
 #include "common/types.hpp"
 
 const float targetDirectionDeg = 135;
@@ -23,7 +23,7 @@ std::vector<VectorDataItem> makeVectorData()
 
   // could also do uniform_real_distribution
   std::normal_distribution<float> rNoise(0.0f, targetSpeed * speedSpreadPercent);
-  std::normal_distribution<float> tNoise(0.0f, degToRad(directionSpreadDeg));
+  std::normal_distribution<float> tNoise(0.0f, kmath::degToRad(directionSpreadDeg));
 
   std::uniform_real_distribution<float> xNoise(-10, 10);
 
@@ -39,8 +39,8 @@ std::vector<VectorDataItem> makeVectorData()
     for (int j = 0; j < config.nVelocimeters; ++j)
     {
       const float r = targetSpeed + rNoise(randomGenerator);
-      const float t = degToRad(dir) + tNoise(randomGenerator);
-      resItem[j] = polarToCart(r, t);
+      const float t = kmath::degToRad(dir) + tNoise(randomGenerator);
+      std::tie(resItem[j].x, resItem[j].y) = kmath::polarToCart(r, t);
     }
     res[i] = resItem;
   }
@@ -60,7 +60,7 @@ std::vector<XYVector> makeVelocimeterLocations()
   {
     const float r = 1 + rNoise(randomGenerator);
     const float t = i * 2 * M_PI / config.nVelocimeters;
-    res[i] = polarToCart(r, t);
+    std::tie(res[i].x, res[i].y) = kmath::polarToCart(r, t);
   }
 
   return res;
