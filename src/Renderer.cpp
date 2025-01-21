@@ -98,8 +98,8 @@ void Renderer::initializeBuffers()
   frontBuffer = std::make_unique<uint32_t[]>(bufferSize);
   backBuffer = std::make_unique<uint32_t[]>(bufferSize);
 
-  std::fill_n(frontBuffer.get(), config::WINDOW_HEIGHT * config::WINDOW_WIDTH, 0x000000);
-  std::fill_n(backBuffer.get(), config::WINDOW_HEIGHT * config::WINDOW_WIDTH, 0x000000);
+  std::fill_n(frontBuffer.get(), config::WINDOW_HEIGHT * config::WINDOW_WIDTH, config::DIM_GREY);
+  std::fill_n(backBuffer.get(), config::WINDOW_HEIGHT * config::WINDOW_WIDTH, config::DIM_GREY);
 
   image = XCreateImage(
       display,

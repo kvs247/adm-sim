@@ -12,7 +12,7 @@
 #include <random>
 
 std::mt19937 randomGenerator(std::random_device{}());
-std::uniform_real_distribution<double> noise(0, 1);
+std::uniform_real_distribution<double> noise(0, config::WIND_NOISE);
 
 namespace
 {
@@ -131,16 +131,16 @@ void Manager::processEvents()
 
 void Manager::advanceSimulation()
 {
-  const double flowX = (state.cursorX - config::WINDOW_WIDTH / 2) * noise(randomGenerator);
-  // const double flowX = 1.0;
-  const double flowY = (state.cursorY - config::WINDOW_HEIGHT / 2) * noise(randomGenerator);
-  // const double flowY = 1.0;
+  double flowX = state.cursorX - config::WINDOW_WIDTH / 2;
+  double flowY = state.cursorY - config::WINDOW_HEIGHT / 2;
 
-  // const double n = std::sqrt(flowX * flowX + flowY * flowY);
+  if (config::WIND_NOISE > 0)
+  {
+    flowX *= noise(randomGenerator);
+    flowY *= noise(randomGenerator);
+  }
+
   const double n = 100;
-
-  // std::cout << n << ", " << flowX / n << ", " << flowY / n << "\n";
-
   simulation.advance({flowX / n, flowY / n});
 };
 

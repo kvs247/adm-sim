@@ -36,8 +36,11 @@ void Simulation::writeFrame(uint32_t *buffer) const
 {
   static double maxZ = 0.1;
 
-  const int xRatio = config::WINDOW_WIDTH / config::SIMULATION_WIDTH;
-  const int yRatio = config::WINDOW_HEIGHT / config::SIMULATION_HEIGHT;
+  static const int xRatio = config::WINDOW_WIDTH / config::SIMULATION_WIDTH;
+  static const int yRatio = config::WINDOW_HEIGHT / config::SIMULATION_HEIGHT;
+
+  static const int xBorder = (config::WINDOW_WIDTH % config::SIMULATION_WIDTH) / 2;
+  static const int yBorder = (config::WINDOW_HEIGHT % config::SIMULATION_HEIGHT) / 2;
 
   for (int x = 0; x < config::SIMULATION_WIDTH; ++x)
   {
@@ -50,7 +53,7 @@ void Simulation::writeFrame(uint32_t *buffer) const
 
       for (int j = 0; j < yRatio; ++j)
       {
-        const int index = x * xRatio + (y * yRatio + j) * config::WINDOW_WIDTH;
+        const int index = xBorder + x * xRatio + (y * yRatio + j + yBorder) * config::WINDOW_WIDTH;
         std::fill_n(buffer + index, xRatio, c);
       }
     }
