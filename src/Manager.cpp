@@ -8,40 +8,89 @@
 #include <iostream>
 #include <thread>
 
-Manager::Manager() : renderer(), running(false), state{0, 0} {}
+#include <cmath> // use kmath
+#include <random>
+
+std::mt19937 randomGenerator(std::random_device{}());
+std::uniform_real_distribution<double> noise(0, 1);
+
+namespace
+{
+struct FrameMetrics
+{
+  int frameNumber;
+  double framesPerSecond;
+  double totalTime;
+  double eventProcessingTime;
+  double simulationTime;
+  double frameGenerationTime;
+  double renderTime;
+
+  std::string toString()
+  {
+    char buffer[100];
+    snprintf(
+        buffer,
+        sizeof(buffer),
+        "i: %4d, fps: %.0f, t: %.0fms [events: %.1f, sim: %.1f, frame: %.0f, render; %0.1f]",
+        frameNumber,
+        framesPerSecond,
+        totalTime * 1000,
+        eventProcessingTime * 1000,
+        simulationTime * 1000,
+        frameGenerationTime * 1000,
+        renderTime * 100);
+    return std::string(buffer);
+  }
+};
+} // anonymous namespace
+
+Manager::Manager() : renderer(), simulation(), state{false, 0, 0} {}
 
 void Manager::start()
 {
-  running = true;
+  state.running = true;
   mainLoop();
 };
 
-void Manager::stop() { running = false; };
+void Manager::stop() { state.running = false; };
 
 void Manager::mainLoop()
 {
   const std::chrono::duration<double> TARGET_FRAME_DURATION(1.0 / config::TARGET_FPS);
-  auto lastFrameTime = std::chrono::steady_clock::now();
+  auto lastFrameTime = now();
 
   int frameNumber = 0;
-  while (running)
+  while (state.running)
   {
-    const auto frameStart = std::chrono::steady_clock::now();
+    const auto frameStart = now();
 
     FrameMetrics frame;
-    frame.frameNumber = frameNumber++;
+    frame.frameNumber = frameNumber;
 
+    auto eventsStart = now();
     processEvents();
-    updateState();
-    updateDisplay();
+    frame.eventProcessingTime = getDurationSeconds(eventsStart, now());
 
-    const auto frameEnd = std::chrono::steady_clock::now();
+    auto simStart = now();
+    advanceSimulation();
+    frame.simulationTime = getDurationSeconds(simStart, now());
+
+    auto frameGenerationStart = now();
+    generateFrame();
+    frame.frameGenerationTime = getDurationSeconds(frameGenerationStart, now());
+
+    auto renderStart = now();
+    updateDisplay();
+    frame.renderTime = getDurationSeconds(renderStart, now());
+
+    const auto frameEnd = now();
     const auto frameDuration = frameEnd - frameStart;
 
-    frame.totalTime = static_cast<double>(frameDuration.count() / 1e9);
+    frame.totalTime = getDurationSeconds(frameStart, frameEnd);
     frame.framesPerSecond = 1.0 / frame.totalTime;
 
-    if (frameNumber % (int)config::TARGET_FPS == 0)
+    if ((frameNumber % (int)config::TARGET_FPS) == 0)
     {
       std::cout << frame.toString() << "\n";
     }
@@ -50,6 +99,8 @@ void Manager::mainLoop()
     {
       std::this_thread::sleep_for(TARGET_FRAME_DURATION - frameDuration);
     }
+
+    ++frameNumber;
   }
 };
 
@@ -78,33 +129,33 @@ void Manager::processEvents()
   }
 };
 
-void Manager::updateState() {};
-
-void Manager::updateDisplay()
+void Manager::advanceSimulation()
 {
-  auto buffer = renderer.getBackBuffer();
-  std::fill_n(buffer, config::WINDOW_WIDTH * config::WINDOW_HEIGHT, 0xffffff);
+  const double flowX = (state.cursorX - config::WINDOW_WIDTH / 2) * noise(randomGenerator);
+  // const double flowX = 1.0;
+  const double flowY = (state.cursorY - config::WINDOW_HEIGHT / 2) * noise(randomGenerator);
+  // const double flowY = 1.0;
 
-  const int radius = 10;
-  for (int y = -radius; y <= radius; ++y)
+  // const double n = std::sqrt(flowX * flowX + flowY * flowY);
+  const double n = 100;
+
+  // std::cout << n << ", " << flowX / n << ", " << flowY / n << "\n";
+
+  simulation.advance({flowX / n, flowY / n});
+};
+
+void Manager::generateFrame() { simulation.writeFrame(renderer.getBackBuffer()); };
+
+void Manager::updateDisplay() { renderer.render(); };
+
+Manager::TimePoint Manager::now() { return std::chrono::steady_clock::now(); }
+
+double Manager::getDurationSeconds(const Manager::TimePoint start, const Manager::TimePoint end)
+{
+  if (start > end)
   {
-    for (int x = -radius; x <= radius; ++x)
-    {
-      if (x * x + y * y > radius * radius)
-      {
-        continue;
-      }
-
-      const int bufferX = state.cursorX + x;
-      const int bufferY = state.cursorY + y;
-      if (bufferX < 0 || bufferX >= config::WINDOW_WIDTH || bufferY < 0 || bufferY >= config::WINDOW_WIDTH)
-      {
-        continue;
-      }
-
-      buffer[bufferY * config::WINDOW_WIDTH + bufferX] = 0x000000;
-    }
+    throw std::runtime_error("start TimePoint cannot be after end TimePoint");
   }
 
-  renderer.render();
-};
+  return std::chrono::duration<double>(end - start).count();
+}

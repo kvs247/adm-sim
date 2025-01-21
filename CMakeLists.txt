@@ -7,8 +7,9 @@ find_package(X11 REQUIRED)
 
 add_executable(admsim
   src/main.cpp
-  src/Renderer.cpp
   src/Manager.cpp
+  src/Renderer.cpp
+  src/Simulation.cpp
 )
 
 target_include_directories(admsim

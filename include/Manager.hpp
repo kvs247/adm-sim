@@ -1,9 +1,12 @@
 #pragma once
 
+#include <chrono>
+#include <iomanip>
 #include <sstream>
 #include <string>
 
 #include "Renderer.hpp"
+#include "Simulation.hpp"
 
 class Manager
 {
@@ -14,34 +17,22 @@ public:
   void stop();
 
 private:
-  void mainLoop();
-  void processEvents();
-  void updateState();
-  void updateDisplay();
-
   Renderer renderer;
-
-  bool running;
+  Simulation simulation;
   struct State
   {
+    bool running;
     int cursorX;
     int cursorY;
   } state;
 
-  struct FrameMetrics
-  {
-    int frameNumber;
-    double framesPerSecond;
-    double totalTime;
-    // double simulationTime;
-    // double colorProcessingTime;
-    // double renderTime
+  void mainLoop();
+  void processEvents();
+  void advanceSimulation();
+  void generateFrame();
+  void updateDisplay();
 
-    std::string toString()
-    {
-      std::stringstream ss;
-      ss << "i: " << frameNumber << ", fps: " << framesPerSecond << ", t: " << totalTime;
-      return ss.str();
-    }
-  };
+  using TimePoint = std::chrono::steady_clock::time_point;
+  static TimePoint now();
+  static double getDurationSeconds(const TimePoint start, const TimePoint end);
 };
