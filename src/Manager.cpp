@@ -140,7 +140,7 @@ void Manager::advanceSimulation()
     flowY *= noise(randomGenerator);
   }
 
-  const double n = 100;
+  const double n = 1000;
   simulation.advance({flowX / n, flowY / n});
 };
 

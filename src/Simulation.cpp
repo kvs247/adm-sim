@@ -2,6 +2,9 @@
 #include <config.hpp>
 #include <cstdint>
 
+#include <Colormap.hpp>
+#include <array>
+
 #include <cmath> // switch to kmath
 #include <iostream>
 
@@ -13,28 +16,9 @@ void Simulation::advance(FlowVector v)
   createNewParcel();
 }
 
-uint32_t mapToHex(double value, double maxValue)
-{
-  // Check if value is within valid range
-  if (value < 0 || value > maxValue)
-  {
-    return 0xffffff;
-  }
-
-  // Handle edge cases
-  if (value == 0)
-    return 0;
-  if (value == maxValue)
-    return std::numeric_limits<uint32_t>::max();
-
-  // Perform linear mapping
-  double normalized = value / maxValue;
-  return static_cast<uint32_t>(normalized * std::numeric_limits<uint32_t>::max());
-}
-
 void Simulation::writeFrame(uint32_t *buffer) const
 {
-  static double maxZ = 0.1;
+  static double maxZ = 0.05;
 
   static const int xRatio = config::WINDOW_WIDTH / config::SIMULATION_WIDTH;
   static const int yRatio = config::WINDOW_HEIGHT / config::SIMULATION_HEIGHT;
@@ -46,10 +30,8 @@ void Simulation::writeFrame(uint32_t *buffer) const
   {
     for (int y = 0; y < config::SIMULATION_HEIGHT; ++y)
     {
-      const auto z = getDensityAtXY(x, y);
-      maxZ = std::max(z, maxZ);
-      const uint32_t c = mapToHex(z / maxZ, 1);
-      // const uint32_t c = z > 0.1 ? 0xffffff : 0x000000;
+      auto z = getDensityAtXY(x, y);
+      const auto c = Colormap::getColor(z, maxZ);
 
       for (int j = 0; j < yRatio; ++j)
       {
@@ -96,5 +78,5 @@ double Simulation::getDensityAtXY(const double x, const double y) const
     density += expression * std::exp(exponent);
   }
 
-  return 100000 * density;
+  return density;
 }
