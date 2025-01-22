@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 project(admsim)
 
-add_compile_options(-Wall -Wextra)
+set(CMAKE_CXX_FLAGS "-O2 -Wall -Wextra")
 
 find_package(X11 REQUIRED)
 

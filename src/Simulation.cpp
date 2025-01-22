@@ -1,12 +1,13 @@
+#include <Colormap.hpp>
 #include <Simulation.hpp>
+#include <atomic>
 #include <config.hpp>
 #include <cstdint>
-
-#include <Colormap.hpp>
-#include <array>
+#include <iostream>
+#include <thread>
+#include <vector>
 
 #include <cmath> // switch to kmath
-#include <iostream>
 
 Simulation::Simulation() {}
 
@@ -16,7 +17,7 @@ void Simulation::advance(FlowVector v)
   createNewParcel();
 }
 
-void Simulation::writeFrame(uint32_t *buffer) const
+void Simulation::writeFrame(uint32_t *buffer, const int numThreads) const
 {
   static double maxZ = 0.05;
 
@@ -26,19 +27,41 @@ void Simulation::writeFrame(uint32_t *buffer) const
   static const int xBorder = (config::WINDOW_WIDTH % config::SIMULATION_WIDTH) / 2;
   static const int yBorder = (config::WINDOW_HEIGHT % config::SIMULATION_HEIGHT) / 2;
 
-  for (int x = 0; x < config::SIMULATION_WIDTH; ++x)
+  std::atomic<int> nextIndex(0);
+
+  auto threadWork = [&]()
   {
-    for (int y = 0; y < config::SIMULATION_HEIGHT; ++y)
+    while (true)
     {
-      auto z = getDensityAtXY(x, y);
-      const auto c = Colormap::getColor(z, maxZ);
+      int i = nextIndex.fetch_add(1);
+      if (i >= config::SIMULATION_HEIGHT * config::SIMULATION_WIDTH)
+      {
+        break;
+      }
+
+      const int x = i % config::SIMULATION_WIDTH;
+      const int y = i / config::SIMULATION_WIDTH;
+
+      const auto density = getDensityAtXY(x, y);
+      const auto color = Colormap::getColor(density, maxZ);
 
       for (int j = 0; j < yRatio; ++j)
       {
         const int index = xBorder + x * xRatio + (y * yRatio + j + yBorder) * config::WINDOW_WIDTH;
-        std::fill_n(buffer + index, xRatio, c);
+        std::fill_n(buffer + index, xRatio, color);
       }
     }
+  };
+
+  std::vector<std::thread> threads;
+  for (int i = 0; i < numThreads; ++i)
+  {
+    threads.emplace_back(std::move(threadWork));
+  }
+
+  for (auto &t : threads)
+  {
+    t.join();
   }
 }
 

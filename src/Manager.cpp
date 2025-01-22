@@ -19,6 +19,7 @@ namespace
 struct FrameMetrics
 {
   int frameNumber;
+  int numThreads;
   double framesPerSecond;
   double totalTime;
   double eventProcessingTime;
@@ -32,9 +33,10 @@ struct FrameMetrics
     snprintf(
         buffer,
         sizeof(buffer),
-        "i: %4d, fps: %.0f, t: %.0fms [events: %.1f, sim: %.1f, frame: %.0f, render; %0.1f]",
+        "i: %4d, fps: %.0f, nCPU: %d, t: %.0fms [events: %.1f, sim: %.1f, frame: %.0f, render; %0.1f]",
         frameNumber,
         framesPerSecond,
+        numThreads,
         totalTime * 1000,
         eventProcessingTime * 1000,
         simulationTime * 1000,
@@ -45,7 +47,7 @@ struct FrameMetrics
 };
 } // anonymous namespace
 
-Manager::Manager() : renderer(), simulation(), state{false, 0, 0} {}
+Manager::Manager() : renderer(), simulation(), state{false, 1, 0, 0} {}
 
 void Manager::start()
 {
@@ -67,6 +69,7 @@ void Manager::mainLoop()
 
     FrameMetrics frame;
     frame.frameNumber = frameNumber;
+    frame.numThreads = state.numThreads;
 
     auto eventsStart = now();
     processEvents();
@@ -97,7 +100,18 @@ void Manager::mainLoop()
 
     if (frameDuration < TARGET_FRAME_DURATION)
     {
+      if (state.numThreads > 1)
+      {
+        --state.numThreads;
+      }
       std::this_thread::sleep_for(TARGET_FRAME_DURATION - frameDuration);
+    }
+    else
+    {
+      if (state.numThreads < config::MAX_THREADS)
+      {
+        ++state.numThreads;
+      }
     }
 
     ++frameNumber;
@@ -144,7 +158,7 @@ void Manager::advanceSimulation()
   simulation.advance({flowX / n, flowY / n});
 };
 
-void Manager::generateFrame() { simulation.writeFrame(renderer.getBackBuffer()); };
+void Manager::generateFrame() { simulation.writeFrame(renderer.getBackBuffer(), state.numThreads); };
 
 void Manager::updateDisplay() { renderer.render(); };
 

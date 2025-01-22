@@ -22,6 +22,7 @@ private:
   struct State
   {
     bool running;
+    int numThreads;
     int cursorX;
     int cursorY;
   } state;

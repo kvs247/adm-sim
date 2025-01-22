@@ -37,7 +37,7 @@ public:
   const std::vector<Parcel> &getData() { return data; }
 
   void advance(FlowVector v);
-  void writeFrame(uint32_t *bufffer) const;
+  void writeFrame(uint32_t *bufffer, const int numThreads) const;
 
 private:
   std::vector<Parcel> data = {};

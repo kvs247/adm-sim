@@ -1,15 +1,18 @@
 #pragma once
 
 #include <cstdint>
+#include <thread>
 
 namespace config
 {
+inline unsigned int MAX_THREADS = std::thread::hardware_concurrency();
+
 inline int WINDOW_WIDTH = 1080;
 inline int WINDOW_HEIGHT = 1080;
 
 // should be divisor of WINDOW parameters
-inline int SIMULATION_WIDTH = 50;
-inline int SIMULATION_HEIGHT = 50;
+inline int SIMULATION_WIDTH = 250;
+inline int SIMULATION_HEIGHT = 250;
 
 inline double TARGET_FPS = 60.0;
 
