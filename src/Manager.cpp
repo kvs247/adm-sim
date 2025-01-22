@@ -145,8 +145,8 @@ void Manager::processEvents()
 
 void Manager::advanceSimulation()
 {
-  double flowX = state.cursorX - config::WINDOW_WIDTH / 2;
-  double flowY = state.cursorY - config::WINDOW_HEIGHT / 2;
+  double flowX = state.cursorX - config::WINDOW_RESOLUTION / 2;
+  double flowY = state.cursorY - config::WINDOW_RESOLUTION / 2;
 
   if (config::WIND_NOISE > 0)
   {

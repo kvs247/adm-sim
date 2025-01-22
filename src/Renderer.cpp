@@ -27,8 +27,8 @@ Renderer::Renderer()
       root,
       0,
       0,
-      config::WINDOW_WIDTH,
-      config::WINDOW_HEIGHT,
+      config::WINDOW_RESOLUTION,
+      config::WINDOW_RESOLUTION,
       0,
       DefaultDepth(display, screen),
       InputOutput,
@@ -71,7 +71,7 @@ Renderer::~Renderer()
 void Renderer::render()
 {
   image->data = reinterpret_cast<char *>(backBuffer.get());
-  XPutImage(display, window, gc, image, 0, 0, 0, 0, config::WINDOW_WIDTH, config::WINDOW_HEIGHT);
+  XPutImage(display, window, gc, image, 0, 0, 0, 0, config::WINDOW_RESOLUTION, config::WINDOW_RESOLUTION);
   frontBuffer.swap(backBuffer);
 }
 
@@ -94,12 +94,12 @@ void Renderer::initializeGC()
 
 void Renderer::initializeBuffers()
 {
-  const int bufferSize = config::WINDOW_WIDTH * config::WINDOW_HEIGHT;
+  const int bufferSize = config::WINDOW_RESOLUTION * config::WINDOW_RESOLUTION;
   frontBuffer = std::make_unique<uint32_t[]>(bufferSize);
   backBuffer = std::make_unique<uint32_t[]>(bufferSize);
 
-  std::fill_n(frontBuffer.get(), config::WINDOW_HEIGHT * config::WINDOW_WIDTH, config::DIM_GREY);
-  std::fill_n(backBuffer.get(), config::WINDOW_HEIGHT * config::WINDOW_WIDTH, config::DIM_GREY);
+  std::fill_n(frontBuffer.get(), config::WINDOW_RESOLUTION * config::WINDOW_RESOLUTION, config::DIM_GREY);
+  std::fill_n(backBuffer.get(), config::WINDOW_RESOLUTION * config::WINDOW_RESOLUTION, config::DIM_GREY);
 
   image = XCreateImage(
       display,
@@ -108,8 +108,8 @@ void Renderer::initializeBuffers()
       ZPixmap,
       0,
       reinterpret_cast<char *>(backBuffer.get()),
-      config::WINDOW_WIDTH,
-      config::WINDOW_HEIGHT,
+      config::WINDOW_RESOLUTION,
+      config::WINDOW_RESOLUTION,
       32,
-      config::WINDOW_WIDTH * sizeof(uint32_t));
+      config::WINDOW_RESOLUTION * sizeof(uint32_t));
 }

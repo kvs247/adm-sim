@@ -19,13 +19,13 @@ void Simulation::advance(FlowVector v)
 
 void Simulation::writeFrame(uint32_t *buffer, const int numThreads) const
 {
-  static double maxZ = 0.05;
+  static double maxZ = 0.01 / config::SCALING_FACTOR;
 
-  static const int xRatio = config::WINDOW_WIDTH / config::SIMULATION_WIDTH;
-  static const int yRatio = config::WINDOW_HEIGHT / config::SIMULATION_HEIGHT;
+  static const int xRatio = config::WINDOW_RESOLUTION / config::SIMULATION_RESOLUTION;
+  static const int yRatio = config::WINDOW_RESOLUTION / config::SIMULATION_RESOLUTION;
 
-  static const int xBorder = (config::WINDOW_WIDTH % config::SIMULATION_WIDTH) / 2;
-  static const int yBorder = (config::WINDOW_HEIGHT % config::SIMULATION_HEIGHT) / 2;
+  static const int xBorder = (config::WINDOW_RESOLUTION % config::SIMULATION_RESOLUTION) / 2;
+  static const int yBorder = (config::WINDOW_RESOLUTION % config::SIMULATION_RESOLUTION) / 2;
 
   std::atomic<int> nextIndex(0);
 
@@ -34,20 +34,20 @@ void Simulation::writeFrame(uint32_t *buffer, const int numThreads) const
     while (true)
     {
       int i = nextIndex.fetch_add(1);
-      if (i >= config::SIMULATION_HEIGHT * config::SIMULATION_WIDTH)
+      if (i >= config::SIMULATION_RESOLUTION * config::SIMULATION_RESOLUTION)
       {
         break;
       }
 
-      const int x = i % config::SIMULATION_WIDTH;
-      const int y = i / config::SIMULATION_WIDTH;
+      const int x = i % config::SIMULATION_RESOLUTION;
+      const int y = i / config::SIMULATION_RESOLUTION;
 
       const auto density = getDensityAtXY(x, y);
       const auto color = Colormap::getColor(density, maxZ);
 
       for (int j = 0; j < yRatio; ++j)
       {
-        const int index = xBorder + x * xRatio + (y * yRatio + j + yBorder) * config::WINDOW_WIDTH;
+        const int index = xBorder + x * xRatio + (y * yRatio + j + yBorder) * config::WINDOW_RESOLUTION;
         std::fill_n(buffer + index, xRatio, color);
       }
     }
@@ -78,8 +78,8 @@ void Simulation::updateData(FlowVector v)
 {
   for (auto &parcel : data)
   {
-    parcel.x += v.x * config::SIMULATION_TIMESTEP * 10;
-    parcel.y += v.y * config::SIMULATION_TIMESTEP * 10;
+    parcel.x += v.x * config::SIMULATION_TIMESTEP * config::VELOCITY_COEFFICIENT * config::SCALING_FACTOR;
+    parcel.y += v.y * config::SIMULATION_TIMESTEP * config::VELOCITY_COEFFICIENT * config::SCALING_FACTOR;
     parcel.sx *= config::DISPERSION_COEFFICIENT;
     parcel.sy *= config::DISPERSION_COEFFICIENT;
   }

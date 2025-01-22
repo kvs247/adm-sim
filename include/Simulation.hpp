@@ -19,8 +19,8 @@ public:
 
     Parcel(
         int _id,
-        double _x = config::SIMULATION_WIDTH / 2,
-        double _y = config::SIMULATION_HEIGHT / 2,
+        double _x = config::SIMULATION_RESOLUTION / 2,
+        double _y = config::SIMULATION_RESOLUTION / 2,
         double _sx = config::PARCEL_INITIAL_SIGMA,
         double _sy = config::PARCEL_INITIAL_SIGMA)
         : id(_id), x(_x), y(_y), sx(_sx), sy(_sy)
