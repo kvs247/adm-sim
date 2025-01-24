@@ -23,6 +23,7 @@ private:
   {
     bool running;
     int numThreads;
+    double velocityMult;
     int cursorX;
     int cursorY;
   } state;

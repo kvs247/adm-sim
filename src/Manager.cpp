@@ -9,10 +9,6 @@
 #include <thread>
 
 #include <cmath> // use kmath
-#include <random>
-
-std::mt19937 randomGenerator(std::random_device{}());
-std::uniform_real_distribution<double> noise(0, config::WIND_NOISE);
 
 namespace
 {
@@ -47,7 +43,7 @@ struct FrameMetrics
 };
 } // anonymous namespace
 
-Manager::Manager() : renderer(), simulation(), state{false, 1, 0, 0} {}
+Manager::Manager() : renderer(), simulation(), state{false, 1, 1.0, 0, 0} {}
 
 void Manager::start()
 {
@@ -132,13 +128,25 @@ void Manager::processEvents()
       state.cursorX = event.xmotion.x;
       state.cursorY = event.xmotion.y;
       break;
-
     case KeyPress:
+    {
       const auto keysym = XkbKeycodeToKeysym(display, event.xkey.keycode, 0, 0);
       if (keysym == XK_q || keysym == XK_x || keysym == XK_Escape)
       {
         stop();
       }
+      break;
+    }
+    case ButtonPress:
+      if (event.xbutton.button == Button4)
+      {
+        state.velocityMult += config::VELOCITY_MULT_INCREMENT;
+      }
+      if (event.xbutton.button == Button5)
+      {
+        state.velocityMult = std::max(0.0, state.velocityMult - config::VELOCITY_MULT_INCREMENT);
+      }
+      break;
     }
   }
 };
@@ -148,14 +156,8 @@ void Manager::advanceSimulation()
   double flowX = state.cursorX - config::WINDOW_RESOLUTION / 2;
   double flowY = state.cursorY - config::WINDOW_RESOLUTION / 2;
 
-  if (config::WIND_NOISE > 0)
-  {
-    flowX *= noise(randomGenerator);
-    flowY *= noise(randomGenerator);
-  }
-
-  const double n = 1000;
-  simulation.advance({flowX / n, flowY / n});
+  const double n = std::hypot(flowX, flowY);
+  simulation.advance({state.velocityMult * flowX / n, state.velocityMult * flowY / n});
 };
 
 void Manager::generateFrame() { simulation.writeFrame(renderer.getBackBuffer(), state.numThreads); };

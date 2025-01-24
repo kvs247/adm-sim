@@ -20,7 +20,7 @@ Renderer::Renderer()
   XSetWindowAttributes windowAttributes = {};
   windowAttributes.background_pixel = WhitePixel(display, screen);
   windowAttributes.border_pixel = BlackPixel(display, screen);
-  windowAttributes.event_mask = ExposureMask | PointerMotionMask | KeyPressMask;
+  windowAttributes.event_mask = ExposureMask | PointerMotionMask | KeyPressMask | ButtonPressMask;
   windowAttributes.override_redirect = true;
   window = XCreateWindow(
       display,
